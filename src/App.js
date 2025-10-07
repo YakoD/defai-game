@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Trophy, Play, RotateCcw, Plus, Trash2, UserPlus } from 'lucide-react';
+import { Trophy, Play, RotateCcw, Plus, Trash2, UserPlus, Globe } from 'lucide-react';
+import translations from './i18n';
 
 const DeFAIClash = () => {
   const [players, setPlayers] = useState([]);
   const [newPlayerName, setNewPlayerName] = useState('');
   const [editingPlayer, setEditingPlayer] = useState(null);
+  const [language, setLanguage] = useState('pt');
 
   const pools = [
     { id: 'A', name: 'Pool A', apr: 5, lossChance: 0, loss: 0 },
@@ -17,6 +19,8 @@ const DeFAIClash = () => {
   const [maxYears, setMaxYears] = useState(5);
   const [gameStarted, setGameStarted] = useState(false);
   const [roundResults, setRoundResults] = useState(null);
+
+  const t = translations[language];
 
   const addPlayer = () => {
     if (newPlayerName.trim() === '') return;
@@ -109,12 +113,16 @@ const DeFAIClash = () => {
 
   const startGame = () => {
     if (players.length === 0) {
-      alert('Por favor adicione pelo menos um jogador!');
+      alert(t.addAtLeastOnePlayer);
       return;
     }
     setGameStarted(true);
     setCurrentYear(0);
     setRoundResults(null);
+  };
+
+  const toggleLanguage = () => {
+    setLanguage(language === 'pt' ? 'en' : 'pt');
   };
 
   const resetGame = () => {
@@ -145,12 +153,21 @@ const DeFAIClash = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-green-900 to-gray-900 p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-black text-center py-6 rounded-lg mb-8 border-2 border-green-500">
+        <div className="bg-black text-center py-6 rounded-lg mb-8 border-2 border-green-500 relative">
           <h1 className="text-5xl font-bold text-green-400 flex items-center justify-center gap-4">
-            DeFAI Clash ⚡
+            {t.title}
           </h1>
-          <p className="text-green-300 mt-2">Decentralized Finance AI Challenge</p>
-          <p className="text-green-400 text-sm mt-1">Powered by Rivalz Network</p>
+          <p className="text-green-300 mt-2">{t.subtitle}</p>
+          <p className="text-green-400 text-sm mt-1">{t.poweredBy}</p>
+
+          {/* Language Toggle */}
+          <button
+            onClick={toggleLanguage}
+            className="absolute top-4 right-4 bg-gray-800 hover:bg-gray-700 text-green-400 px-4 py-2 rounded-lg flex items-center gap-2 border border-green-500 transition-colors"
+          >
+            <Globe size={20} />
+            <span className="font-bold">{language === 'pt' ? 'EN' : 'PT'}</span>
+          </button>
         </div>
 
         {!gameStarted ? (
@@ -158,17 +175,17 @@ const DeFAIClash = () => {
           <div className="space-y-6">
             {/* Game Settings */}
             <div className="bg-gray-800 rounded-lg p-6 border border-green-500">
-              <h2 className="text-2xl font-bold text-green-400 mb-4">Configurações do Jogo</h2>
+              <h2 className="text-2xl font-bold text-green-400 mb-4">{t.gameSettings}</h2>
               <div className="flex items-center gap-4">
-                <label className="text-green-400">Anos Máximos:</label>
-                <select 
-                  value={maxYears} 
+                <label className="text-green-400">{t.maxYears}:</label>
+                <select
+                  value={maxYears}
                   onChange={(e) => setMaxYears(Number(e.target.value))}
                   className="bg-gray-700 text-white px-4 py-2 rounded border border-green-500"
                 >
-                  <option value={3}>3 Anos</option>
-                  <option value={4}>4 Anos</option>
-                  <option value={5}>5 Anos</option>
+                  <option value={3}>3 {t.years}</option>
+                  <option value={4}>4 {t.years}</option>
+                  <option value={5}>5 {t.years}</option>
                 </select>
               </div>
             </div>
@@ -176,28 +193,28 @@ const DeFAIClash = () => {
             {/* Add Players */}
             <div className="bg-gray-800 rounded-lg p-6 border border-green-500">
               <h2 className="text-2xl font-bold text-green-400 mb-4 flex items-center gap-2">
-                <UserPlus size={24} /> Adicionar Jogadores
+                <UserPlus size={24} /> {t.addPlayers}
               </h2>
-              
+
               <div className="flex gap-3 mb-6">
                 <input
                   type="text"
                   value={newPlayerName}
                   onChange={(e) => setNewPlayerName(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && addPlayer()}
-                  placeholder="Digite o nome do jogador..."
+                  placeholder={t.playerNamePlaceholder}
                   className="flex-1 bg-gray-700 text-white px-4 py-2 rounded border border-green-500 focus:outline-none focus:border-green-400"
                 />
                 <button
                   onClick={addPlayer}
                   className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg flex items-center gap-2 font-bold"
                 >
-                  <Plus size={20} /> Adicionar
+                  <Plus size={20} /> {t.add}
                 </button>
               </div>
 
               <div className="mb-4 text-green-300">
-                Total de Jogadores: <span className="font-bold text-xl">{players.length}</span>
+                {t.totalPlayers}: <span className="font-bold text-xl">{players.length}</span>
               </div>
 
               {players.length > 0 ? (
@@ -236,41 +253,41 @@ const DeFAIClash = () => {
                 </div>
               ) : (
                 <div className="text-center text-gray-400 py-8 border-2 border-dashed border-gray-600 rounded">
-                  Nenhum jogador adicionado ainda. Adicione jogadores para começar!
+                  {t.noPlayersYet}
                 </div>
               )}
             </div>
 
             {/* Pool Information */}
             <div className="bg-gray-800 rounded-lg p-6 border border-green-500">
-              <h2 className="text-2xl font-bold text-green-400 mb-4">Informações dos Pools</h2>
+              <h2 className="text-2xl font-bold text-green-400 mb-4">{t.poolsInfo}</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {pools.map(pool => (
                   <div key={pool.id} className="bg-gray-700 p-4 rounded border border-green-500">
-                    <div className="text-xl font-bold text-green-400 mb-2">Pool {pool.id}</div>
+                    <div className="text-xl font-bold text-green-400 mb-2">{t.pool} {pool.id}</div>
                     <div className="text-sm text-gray-300 space-y-1">
                       <div>
-                        <span className="font-semibold">APR:</span>{' '}
-                        {typeof pool.apr === 'object' 
-                          ? `${pool.apr.min}% a ${pool.apr.max}%` 
+                        <span className="font-semibold">{t.apr}:</span>{' '}
+                        {typeof pool.apr === 'object'
+                          ? `${pool.apr.min}% ${t.to} ${pool.apr.max}%`
                           : `${pool.apr}%`}
                       </div>
                       <div>
-                        <span className="font-semibold">Risco:</span>{' '}
-                        {pool.id === 'C' 
-                          ? 'Aleatório' 
-                          : pool.lossChance === 0 
-                            ? 'Sem risco' 
-                            : `${pool.lossChance}% de chance`}
+                        <span className="font-semibold">{t.risk}:</span>{' '}
+                        {pool.id === 'C'
+                          ? t.random
+                          : pool.lossChance === 0
+                            ? t.noRisk
+                            : `${pool.lossChance}% ${t.chanceOf}`}
                       </div>
                       {pool.loss !== 0 && pool.id !== 'C' && (
                         <div>
-                          <span className="font-semibold">Perda:</span> {pool.loss}%
+                          <span className="font-semibold">{t.loss}:</span> {pool.loss}%
                         </div>
                       )}
                       {pool.id === 'C' && (
                         <div>
-                          <span className="font-semibold">Perda:</span> Aleatório
+                          <span className="font-semibold">{t.loss}:</span> {t.random}
                         </div>
                       )}
                     </div>
@@ -286,7 +303,7 @@ const DeFAIClash = () => {
                 disabled={players.length === 0}
                 className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white px-12 py-4 rounded-lg text-xl font-bold flex items-center gap-3 mx-auto disabled:cursor-not-allowed"
               >
-                <Play size={24} /> Começar Jogo
+                <Play size={24} /> {t.startGame}
               </button>
             </div>
           </div>
@@ -298,11 +315,11 @@ const DeFAIClash = () => {
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-4">
                   <div className="text-green-400">
-                    <div className="text-sm">Ano Atual:</div>
+                    <div className="text-sm">{t.currentYear}:</div>
                     <div className="text-3xl font-bold">{currentYear} / {maxYears}</div>
                   </div>
                   <div className="text-green-400">
-                    <div className="text-sm">Total de Jogadores:</div>
+                    <div className="text-sm">{t.totalPlayers}:</div>
                     <div className="text-3xl font-bold">{players.length}</div>
                   </div>
                 </div>
@@ -313,28 +330,28 @@ const DeFAIClash = () => {
                     disabled={currentYear >= maxYears || !allPlayersSelected}
                     className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 font-bold disabled:cursor-not-allowed"
                   >
-                    <Play size={20} /> Executar Ano {currentYear + 1}
+                    <Play size={20} /> {t.runYear} {currentYear + 1}
                   </button>
                   {currentYear < maxYears && currentYear > 0 && (
                     <button
                       onClick={endGameEarly}
                       className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-bold"
                     >
-                      Finalizar Jogo
+                      {t.endGame}
                     </button>
                   )}
                   <button
                     onClick={resetGame}
                     className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 font-bold"
                   >
-                    <RotateCcw size={20} /> Resetar
+                    <RotateCcw size={20} /> {t.reset}
                   </button>
                 </div>
               </div>
 
               {!allPlayersSelected && currentYear < maxYears && (
                 <div className="mt-4 bg-yellow-900 text-yellow-200 p-3 rounded">
-                  ⚠️ Todos os jogadores devem selecionar um pool antes de executar o ano!
+                  {t.allPlayersMustSelect}
                 </div>
               )}
             </div>
@@ -343,18 +360,18 @@ const DeFAIClash = () => {
               {/* Player Selection */}
               <div className="lg:col-span-2">
                 <div className="bg-gray-800 rounded-lg p-6 border border-green-500">
-                  <h2 className="text-2xl font-bold text-green-400 mb-4">Seleção de Pool dos Jogadores</h2>
-                  
+                  <h2 className="text-2xl font-bold text-green-400 mb-4">{t.playerPoolSelection}</h2>
+
                   {/* Pool Legend */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                     {pools.map(pool => (
                       <div key={pool.id} className="bg-gray-700 p-3 rounded border border-green-500">
-                        <div className="font-bold text-green-400">Pool {pool.id}</div>
+                        <div className="font-bold text-green-400">{t.pool} {pool.id}</div>
                         <div className="text-xs text-gray-300">
-                          Retorno: {typeof pool.apr === 'object' ? `${pool.apr.min}% a ${pool.apr.max}%` : `${pool.apr}%`}
+                          {t.return}: {typeof pool.apr === 'object' ? `${pool.apr.min}% ${t.to} ${pool.apr.max}%` : `${pool.apr}%`}
                         </div>
                         <div className="text-xs text-gray-300">
-                          Perda: {pool.lossChance}% chance
+                          {t.loss}: {pool.lossChance}% {language === 'pt' ? 'chance' : 'chance'}
                         </div>
                       </div>
                     ))}
@@ -374,9 +391,9 @@ const DeFAIClash = () => {
                           disabled={currentYear >= maxYears}
                           className="w-full bg-gray-600 text-white px-2 py-1 rounded text-sm border border-green-500"
                         >
-                          <option value="">Selecionar Pool</option>
+                          <option value="">{t.selectPool}</option>
                           {pools.map(pool => (
-                            <option key={pool.id} value={pool.id}>Pool {pool.id}</option>
+                            <option key={pool.id} value={pool.id}>{t.pool} {pool.id}</option>
                           ))}
                         </select>
                       </div>
@@ -388,17 +405,17 @@ const DeFAIClash = () => {
                 {roundResults && (
                   <div className="bg-gray-800 rounded-lg p-6 mt-6 border border-green-500">
                     <h2 className="text-2xl font-bold text-green-400 mb-4">
-                      Resultados do Ano {currentYear}
+                      {t.resultsYear} {currentYear}
                     </h2>
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="border-b border-green-500">
-                            <th className="text-left text-green-400 p-2">Jogador</th>
-                            <th className="text-left text-green-400 p-2">Pool</th>
-                            <th className="text-right text-green-400 p-2">APR</th>
-                            <th className="text-right text-green-400 p-2">Ganho/Perda</th>
-                            <th className="text-right text-green-400 p-2">Novo Saldo</th>
+                            <th className="text-left text-green-400 p-2">{t.player}</th>
+                            <th className="text-left text-green-400 p-2">{t.pool}</th>
+                            <th className="text-right text-green-400 p-2">{t.apr}</th>
+                            <th className="text-right text-green-400 p-2">{t.gainLoss}</th>
+                            <th className="text-right text-green-400 p-2">{t.newBalance}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -428,16 +445,16 @@ const DeFAIClash = () => {
               <div className="lg:col-span-1">
                 <div className="bg-gray-800 rounded-lg p-6 border border-green-500 sticky top-8">
                   <h2 className="text-2xl font-bold text-green-400 mb-4 flex items-center gap-2">
-                    <Trophy className="text-yellow-400" /> Classificação
+                    <Trophy className="text-yellow-400" /> {t.leaderboard}
                   </h2>
                   <div className="space-y-2 max-h-96 overflow-y-auto">
                     {getLeaderboard().map((player, idx) => (
-                      <div 
+                      <div
                         key={player.id}
                         className={`p-3 rounded flex items-center justify-between ${
-                          idx === 0 ? 'bg-yellow-600' : 
-                          idx === 1 ? 'bg-gray-600' : 
-                          idx === 2 ? 'bg-orange-700' : 
+                          idx === 0 ? 'bg-yellow-600' :
+                          idx === 1 ? 'bg-gray-600' :
+                          idx === 2 ? 'bg-orange-700' :
                           'bg-gray-700'
                         }`}
                       >
@@ -459,9 +476,9 @@ const DeFAIClash = () => {
 
                   {currentYear >= maxYears && (
                     <div className="mt-6 bg-green-600 p-4 rounded text-center">
-                      <div className="text-2xl font-bold text-white mb-2">🏆 Fim de Jogo!</div>
+                      <div className="text-2xl font-bold text-white mb-2">{t.gameOver}</div>
                       <div className="text-white">
-                        Vencedor: {getLeaderboard()[0].name}
+                        {t.winner}: {getLeaderboard()[0].name}
                       </div>
                       <div className="text-white font-bold">
                         ${getLeaderboard()[0].balance.toFixed(2)}
