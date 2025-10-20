@@ -370,8 +370,12 @@ const DeFAIClash = () => {
                         <div className="text-xs text-gray-300">
                           {t.return}: {typeof pool.apr === 'object' ? `${pool.apr.min}% ${t.to} ${pool.apr.max}%` : `${pool.apr}%`}
                         </div>
-                        <div className="text-xs text-gray-300">
-                          {t.loss}: {pool.lossChance}% {language === 'pt' ? 'chance' : 'chance'}
+                         <div className="text-xs text-gray-300">
+                           {t.loss}: {pool.id === 'C'
+                            ? t.random
+                              : pool.lossChance === 0
+                                ? t.noRisk
+                                : `${pool.lossChance}% ${t.chance || 'chance'}`}
                         </div>
                       </div>
                     ))}
